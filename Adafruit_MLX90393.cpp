@@ -305,7 +305,14 @@ bool Adafruit_MLX90393::startSingleMeasurement(void) {
   return false;
 }
 
-
+  /**
+   * @brief Enable or disable the internal temperature compensation.
+   *
+   * When enabled, the device applies temperature compensation to the
+   * magnetic readings by adjusting internal offsets.
+   *
+   * @param state true to enable temperature compensation; false to disable it.
+   */
   void Adafruit_MLX90393::setTemperatureCompensation(bool state){
     uint16_t data;
     readRegister(MLX90393_CONF2, &data);
@@ -324,11 +331,10 @@ bool Adafruit_MLX90393::startSingleMeasurement(void) {
   }
 
   /**
-   * /
-   * 
-   * Gets the current temperature compensation setting.
-   * @return True if temperature compensation is enabled, false otherwise.
-   * */
+   * @brief Get the current temperature compensation setting.
+   *
+   * @return true if temperature compensation is enabled; false otherwise.
+   */
 
   bool Adafruit_MLX90393::getTemperatureCompensation(void){
     uint16_t data;
