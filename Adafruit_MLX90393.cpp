@@ -305,6 +305,43 @@ bool Adafruit_MLX90393::startSingleMeasurement(void) {
   return false;
 }
 
+
+  void Adafruit_MLX90393::setTemperatureCompensation(bool state){
+    uint16_t data;
+    readRegister(MLX90393_CONF2, &data);
+
+    if (state)
+    {
+      data |= MLX90393_TEMP_COMPENSATION_BIT;
+      _isTemperatureCompensationEnabled = true;
+    }
+    else{
+      data &= ~MLX90393_TEMP_COMPENSATION_BIT;
+      _isTemperatureCompensationEnabled = false;
+    }
+    writeRegister(MLX90393_CONF2, data);
+
+  }
+
+  /**
+   * /
+   * 
+   * Gets the current temperature compensation setting.
+   * @return True if temperature compensation is enabled, false otherwise.
+   * */
+
+  bool Adafruit_MLX90393::getTemperatureCompensation(void){
+    uint16_t data;
+    readRegister(MLX90393_CONF2, &data);
+
+    if (data & MLX90393_TEMP_COMPENSATION_BIT){
+      return true;
+    }
+    else{
+      return false;
+    }
+  }
+
 /**
  * Reads data from data register & returns the results.
  *
@@ -331,6 +368,13 @@ bool Adafruit_MLX90393::readMeasurement(float *x, float *y, float *z, float *t) 
   xi = (rx[2] << 8) | rx[3];
   yi = (rx[4] << 8) | rx[5];
   zi = (rx[6] << 8) | rx[7];
+
+
+  if (_isTemperatureCompensationEnabled){
+    xi -= 0x8000;
+    yi -= 0x8000;
+    zi -= 0x8000;
+  }
 
   if (_res_x == MLX90393_RES_18)
     xi -= 0x8000;

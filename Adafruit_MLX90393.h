@@ -37,6 +37,7 @@
 #define MLX90393_STATUS_RESET (0x01)  /**< Reset value for status response. */
 #define MLX90393_STATUS_ERROR (0xFF)  /**< OK value for status response. */
 #define MLX90393_STATUS_MASK (0xFC)   /**< Mask for status OK checks. */
+#define MLX90393_TEMP_COMPENSATION_BIT (0x4000) /**< Temp compensation bit in CONF2. */
 
 /** Register map. */
 enum {
@@ -191,6 +192,9 @@ public:
   bool setFilter(enum mlx90393_filter filter);
   enum mlx90393_filter getFilter(void);
 
+  void setTemperatureCompensation(bool state);
+  bool getTemperatureCompensation(void);
+
   bool setOversampling(enum mlx90393_oversampling oversampling);
   enum mlx90393_oversampling getOversampling(void);
 
@@ -203,6 +207,8 @@ public:
 private:
   Adafruit_I2CDevice *i2c_dev = NULL;
   Adafruit_SPIDevice *spi_dev = NULL;
+
+  bool _isTemperatureCompensationEnabled = false;
 
   bool readRegister(uint8_t reg, uint16_t *data);
   bool writeRegister(uint8_t reg, uint16_t data);
