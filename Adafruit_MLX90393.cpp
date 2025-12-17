@@ -30,17 +30,21 @@ Adafruit_MLX90393::Adafruit_MLX90393(void) {}
  *            The Wire object to be used for I2C connections.
  *    @return True if initialization was successful, otherwise false.
  */
-bool Adafruit_MLX90393::begin_I2C(uint8_t i2c_addr, TwoWire *wire) {
-  if (i2c_dev) {
+bool Adafruit_MLX90393::begin_I2C(uint8_t i2c_addr, TwoWire *wire)
+{
+  if (i2c_dev)
+  {
     delete i2c_dev;
   }
 
-  if (!i2c_dev) {
+  if (!i2c_dev)
+  {
     i2c_dev = new Adafruit_I2CDevice(i2c_addr, wire);
   }
   spi_dev = NULL;
 
-  if (!i2c_dev->begin()) {
+  if (!i2c_dev->begin())
+  {
     return false;
   }
 
@@ -53,9 +57,11 @@ bool Adafruit_MLX90393::begin_I2C(uint8_t i2c_addr, TwoWire *wire) {
  *    @param  theSPI The SPI object to be used for SPI connections.
  *    @return True if initialization was successful, otherwise false.
  */
-boolean Adafruit_MLX90393::begin_SPI(uint8_t cs_pin, SPIClass *theSPI) {
+boolean Adafruit_MLX90393::begin_SPI(uint8_t cs_pin, SPIClass *theSPI)
+{
   i2c_dev = NULL;
-  if (!spi_dev) {
+  if (!spi_dev)
+  {
     _cspin = cs_pin;
     spi_dev = new Adafruit_SPIDevice(cs_pin,
                                      1000000,               // frequency
@@ -63,13 +69,15 @@ boolean Adafruit_MLX90393::begin_SPI(uint8_t cs_pin, SPIClass *theSPI) {
                                      SPI_MODE3,             // data mode
                                      theSPI);
   }
-  if (!spi_dev->begin()) {
+  if (!spi_dev->begin())
+  {
     return false;
   }
   return _init();
 }
 
-bool Adafruit_MLX90393::_init(void) {
+bool Adafruit_MLX90393::_init(void)
+{
 
   if (!exitMode())
     return false;
@@ -78,7 +86,8 @@ bool Adafruit_MLX90393::_init(void) {
     return false;
 
   /* Set gain and sensor config. */
-  if (!setGain(MLX90393_GAIN_1X)) {
+  if (!setGain(MLX90393_GAIN_1X))
+  {
     return false;
   }
 
@@ -99,7 +108,8 @@ bool Adafruit_MLX90393::_init(void) {
     return false;
 
   /* set INT pin to output interrupt */
-  if (!setTrigInt(false)) {
+  if (!setTrigInt(false))
+  {
     return false;
   }
 
@@ -110,7 +120,8 @@ bool Adafruit_MLX90393::_init(void) {
  * Perform a mode exit
  * @return True if the operation succeeded, otherwise false.
  */
-bool Adafruit_MLX90393::exitMode(void) {
+bool Adafruit_MLX90393::exitMode(void)
+{
   uint8_t tx[1] = {MLX90393_REG_EX};
 
   /* Perform the transaction. */
@@ -121,11 +132,13 @@ bool Adafruit_MLX90393::exitMode(void) {
  * Perform a soft reset
  * @return True if the operation succeeded, otherwise false.
  */
-bool Adafruit_MLX90393::reset(void) {
+bool Adafruit_MLX90393::reset(void)
+{
   uint8_t tx[1] = {MLX90393_REG_RT};
 
   /* Perform the transaction. */
-  if (transceive(tx, sizeof(tx), NULL, 0, 5) != MLX90393_STATUS_RESET) {
+  if (transceive(tx, sizeof(tx), NULL, 0, 5) != MLX90393_STATUS_RESET)
+  {
     return false;
   }
   return true;
@@ -136,7 +149,8 @@ bool Adafruit_MLX90393::reset(void) {
  * @param gain  The gain level to set.
  * @return True if the operation succeeded, otherwise false.
  */
-bool Adafruit_MLX90393::setGain(mlx90393_gain_t gain) {
+bool Adafruit_MLX90393::setGain(mlx90393_gain_t gain)
+{
   _gain = gain;
 
   uint16_t data;
@@ -155,7 +169,8 @@ bool Adafruit_MLX90393::setGain(mlx90393_gain_t gain) {
  *
  * @return An enum containing the current gain level.
  */
-mlx90393_gain_t Adafruit_MLX90393::getGain(void) {
+mlx90393_gain_t Adafruit_MLX90393::getGain(void)
+{
   uint16_t data;
   readRegister(MLX90393_CONF1, &data);
 
@@ -172,12 +187,14 @@ mlx90393_gain_t Adafruit_MLX90393::getGain(void) {
  * @return True if the operation succeeded, otherwise false.
  */
 bool Adafruit_MLX90393::setResolution(enum mlx90393_axis axis,
-                                      enum mlx90393_resolution resolution) {
+                                      enum mlx90393_resolution resolution)
+{
 
   uint16_t data;
   readRegister(MLX90393_CONF3, &data);
 
-  switch (axis) {
+  switch (axis)
+  {
   case MLX90393_X:
     _res_x = resolution;
     data &= ~0x0060;
@@ -204,8 +221,10 @@ bool Adafruit_MLX90393::setResolution(enum mlx90393_axis axis,
  * @return An enum containing the current resolution.
  */
 enum mlx90393_resolution
-Adafruit_MLX90393::getResolution(enum mlx90393_axis axis) {
-  switch (axis) {
+Adafruit_MLX90393::getResolution(enum mlx90393_axis axis)
+{
+  switch (axis)
+  {
   case MLX90393_X:
     return _res_x;
   case MLX90393_Y:
@@ -222,7 +241,8 @@ Adafruit_MLX90393::getResolution(enum mlx90393_axis axis) {
  * @param filter The digital filter setting.
  * @return True if the operation succeeded, otherwise false.
  */
-bool Adafruit_MLX90393::setFilter(enum mlx90393_filter filter) {
+bool Adafruit_MLX90393::setFilter(enum mlx90393_filter filter)
+{
   _dig_filt = filter;
 
   uint16_t data;
@@ -246,7 +266,8 @@ enum mlx90393_filter Adafruit_MLX90393::getFilter(void) { return _dig_filt; }
  * @return True if the operation succeeded, otherwise false.
  */
 bool Adafruit_MLX90393::setOversampling(
-    enum mlx90393_oversampling oversampling) {
+    enum mlx90393_oversampling oversampling)
+{
   _osr = oversampling;
 
   uint16_t data;
@@ -262,7 +283,8 @@ bool Adafruit_MLX90393::setOversampling(
  * Gets the current oversampling setting.
  * @return An enum containing the current oversampling setting.
  */
-enum mlx90393_oversampling Adafruit_MLX90393::getOversampling(void) {
+enum mlx90393_oversampling Adafruit_MLX90393::getOversampling(void)
+{
   return _osr;
 }
 
@@ -273,7 +295,8 @@ enum mlx90393_oversampling Adafruit_MLX90393::getOversampling(void) {
  *
  * @return True if the operation succeeded, otherwise false.
  */
-bool Adafruit_MLX90393::setTrigInt(bool state) {
+bool Adafruit_MLX90393::setTrigInt(bool state)
+{
   uint16_t data;
   readRegister(MLX90393_CONF2, &data);
 
@@ -281,7 +304,8 @@ bool Adafruit_MLX90393::setTrigInt(bool state) {
   data &= ~0x8000;
 
   // set trigint bit if desired
-  if (state) {
+  if (state)
+  {
     /* Set the INT, highest bit */
     data |= 0x8000;
   }
@@ -294,59 +318,65 @@ bool Adafruit_MLX90393::setTrigInt(bool state) {
  *
  * @return True on command success
  */
-bool Adafruit_MLX90393::startSingleMeasurement(void) {
+bool Adafruit_MLX90393::startSingleMeasurement(void)
+{
   uint8_t tx[1] = {MLX90393_REG_SM | MLX90393_AXIS_ALL};
 
   /* Set the device to single measurement mode */
   uint8_t stat = transceive(tx, sizeof(tx), NULL, 0, 0);
-  if ((stat == MLX90393_STATUS_OK) || (stat == MLX90393_STATUS_SMMODE)) {
+  if ((stat == MLX90393_STATUS_OK) || (stat == MLX90393_STATUS_SMMODE))
+  {
     return true;
   }
   return false;
 }
 
-  /**
-   * @brief Enable or disable the internal temperature compensation.
-   *
-   * When enabled, the device applies temperature compensation to the
-   * magnetic readings by adjusting internal offsets.
-   *
-   * @param state true to enable temperature compensation; false to disable it.
-   */
-  void Adafruit_MLX90393::setTemperatureCompensation(bool state){
-    uint16_t data;
-    readRegister(MLX90393_CONF2, &data);
+/**
+ * @brief Enable or disable the internal temperature compensation.
+ *
+ * When enabled, the device applies temperature compensation to the
+ * magnetic readings by adjusting internal offsets.
+ *
+ * @param state true to enable temperature compensation; false to disable it.
+ */
+bool Adafruit_MLX90393::setTemperatureCompensation(bool state)
+{
+  uint16_t data;
+  readRegister(MLX90393_CONF2, &data);
 
-    if (state)
-    {
-      data |= MLX90393_TEMP_COMPENSATION_BIT;
-      _isTemperatureCompensationEnabled = true;
-    }
-    else{
-      data &= ~MLX90393_TEMP_COMPENSATION_BIT;
-      _isTemperatureCompensationEnabled = false;
-    }
-    writeRegister(MLX90393_CONF2, data);
-
+  if (state)
+  {
+    data |= MLX90393_TEMP_COMPENSATION_BIT;
+    _isTemperatureCompensationEnabled = true;
   }
-
-  /**
-   * @brief Get the current temperature compensation setting.
-   *
-   * @return true if temperature compensation is enabled; false otherwise.
-   */
-
-  bool Adafruit_MLX90393::getTemperatureCompensation(void){
-    uint16_t data;
-    readRegister(MLX90393_CONF2, &data);
-
-    if (data & MLX90393_TEMP_COMPENSATION_BIT){
-      return true;
-    }
-    else{
-      return false;
-    }
+  else
+  {
+    data &= ~MLX90393_TEMP_COMPENSATION_BIT;
+    _isTemperatureCompensationEnabled = false;
   }
+  return writeRegister(MLX90393_CONF2, data);
+}
+
+/**
+ * @brief Get the current temperature compensation setting.
+ *
+ * @return true if temperature compensation is enabled; false otherwise.
+ */
+
+bool Adafruit_MLX90393::getTemperatureCompensation(void)
+{
+  uint16_t data;
+  readRegister(MLX90393_CONF2, &data);
+
+  if (data & MLX90393_TEMP_COMPENSATION_BIT)
+  {
+    return true;
+  }
+  else
+  {
+    return false;
+  }
+}
 
 /**
  * Reads data from data register & returns the results.
@@ -357,49 +387,45 @@ bool Adafruit_MLX90393::startSingleMeasurement(void) {
  *
  * @return True on command success
  */
-bool Adafruit_MLX90393::readMeasurement(float *x, float *y, float *z, float *t) {
+bool Adafruit_MLX90393::readMeasurement(float *x, float *y, float *z, float *t)
+{
   uint8_t tx[1] = {MLX90393_REG_RM | MLX90393_AXIS_ALL};
   uint8_t rx[8] = {0};
 
+  // int16_t xi, yi, zi;
+  uint16_t raw_xi, raw_yi, raw_zi, raw_ti; //  TO BE TESTED.
+  //uint16_t ti;
+  //float aux_zi, aux_xi, aux_yi; // TO BE TESTED. Auxiliary variable for avoid overflow.
+
   /* Read a single data sample. */
-  if (transceive(tx, sizeof(tx), rx, sizeof(rx), 0) != MLX90393_STATUS_OK) {
+  if (transceive(tx, sizeof(tx), rx, sizeof(rx), 0) != MLX90393_STATUS_OK)
+  {
     return false;
   }
 
-  int16_t xi, yi, zi;
-  uint16_t ti;
-
-  /* Convert data to uT and float. */
-  ti = (uint16_t(rx[0]) << 8) | rx[1];
-  xi = (rx[2] << 8) | rx[3];
-  yi = (rx[4] << 8) | rx[5];
-  zi = (rx[6] << 8) | rx[7];
+  /* RAW data moved to a 16bit unsigned integer. */
+  raw_ti = (uint16_t(rx[0]) << 8) | rx[1];
+  raw_xi = (rx[2] << 8) | rx[3];
+  raw_yi = (rx[4] << 8) | rx[5];
+  raw_zi = (rx[6] << 8) | rx[7];
 
 
-  if (_isTemperatureCompensationEnabled){
-    xi -= 0x8000;
-    yi -= 0x8000;
-    zi -= 0x8000;
+  if (!_isTemperatureCompensationEnabled)
+  {
+    *x = (float)raw_xi * mlx90393_lsb_lookup[0][_gain][_res_x][0];
+    *y = (float)raw_yi * mlx90393_lsb_lookup[0][_gain][_res_y][0];
+    *z = (float)raw_zi * mlx90393_lsb_lookup[0][_gain][_res_z][1];
+  }
+  else
+  {
+    *x = (raw_xi - 32768.0f) * mlx90393_lsb_lookup[0][_gain][_res_x][0];
+    *y = (raw_yi - 32768.0f) * mlx90393_lsb_lookup[0][_gain][_res_y][0];
+    *z = (raw_zi - 32768.0f) * mlx90393_lsb_lookup[0][_gain][_res_z][1];
   }
 
-  if (_res_x == MLX90393_RES_18)
-    xi -= 0x8000;
-  if (_res_x == MLX90393_RES_19)
-    xi -= 0x4000;
-  if (_res_y == MLX90393_RES_18)
-    yi -= 0x8000;
-  if (_res_y == MLX90393_RES_19)
-    yi -= 0x4000;
-  if (_res_z == MLX90393_RES_18)
-    zi -= 0x8000;
-  if (_res_z == MLX90393_RES_19)
-    zi -= 0x4000;
-
-  *x = (float)xi * mlx90393_lsb_lookup[0][_gain][_res_x][0];
-  *y = (float)yi * mlx90393_lsb_lookup[0][_gain][_res_y][0];
-  *z = (float)zi * mlx90393_lsb_lookup[0][_gain][_res_z][1];
-  if(t != nullptr) {
-    *t = 25 + (ti - 46244.f)/45.2f;
+  if (t != nullptr)
+  {
+    *t = 25 + (raw_ti - 46244.f) / 45.2f;
   }
 
   return true;
@@ -414,7 +440,8 @@ bool Adafruit_MLX90393::readMeasurement(float *x, float *y, float *z, float *t) 
  *
  * @return True if the operation succeeded, otherwise false.
  */
-bool Adafruit_MLX90393::readData(float *x, float *y, float *z, float *t) {
+bool Adafruit_MLX90393::readData(float *x, float *y, float *z, float *t)
+{
   if (!startSingleMeasurement())
     return false;
   // See MLX90393 Getting Started Guide for fancy formula
@@ -422,10 +449,12 @@ bool Adafruit_MLX90393::readData(float *x, float *y, float *z, float *t) {
   // For now, using Table 18 from datasheet
   // Without +10ms delay measurement doesn't always seem to work
   delay(mlx90393_tconv[_dig_filt][_osr] + 10);
+
   return readMeasurement(x, y, z, t);
 }
 
-bool Adafruit_MLX90393::writeRegister(uint8_t reg, uint16_t data) {
+bool Adafruit_MLX90393::writeRegister(uint8_t reg, uint16_t data)
+{
   uint8_t tx[4] = {
       MLX90393_REG_WR,
       (uint8_t)(data >> 8),   // high byte
@@ -436,7 +465,8 @@ bool Adafruit_MLX90393::writeRegister(uint8_t reg, uint16_t data) {
   return (transceive(tx, sizeof(tx), NULL, 0, 0) == MLX90393_STATUS_OK);
 }
 
-bool Adafruit_MLX90393::readRegister(uint8_t reg, uint16_t *data) {
+bool Adafruit_MLX90393::readRegister(uint8_t reg, uint16_t *data)
+{
   uint8_t tx[2] = {
       MLX90393_REG_RR,
       (uint8_t)(reg << 2)}; // the register itself, shift up by 2 bits!
@@ -444,7 +474,8 @@ bool Adafruit_MLX90393::readRegister(uint8_t reg, uint16_t *data) {
   uint8_t rx[2];
 
   /* Perform the transaction. */
-  if (transceive(tx, sizeof(tx), rx, sizeof(rx), 0) != MLX90393_STATUS_OK) {
+  if (transceive(tx, sizeof(tx), rx, sizeof(rx), 0) != MLX90393_STATUS_OK)
+  {
     return false;
   }
 
@@ -452,6 +483,7 @@ bool Adafruit_MLX90393::readRegister(uint8_t reg, uint16_t *data) {
 
   return true;
 }
+
 
 /**************************************************************************/
 /*!
@@ -461,7 +493,8 @@ bool Adafruit_MLX90393::readRegister(uint8_t reg, uint16_t *data) {
     @returns True on successful read
 */
 /**************************************************************************/
-bool Adafruit_MLX90393::getEvent(sensors_event_t *event) {
+bool Adafruit_MLX90393::getEvent(sensors_event_t *event)
+{
   /* Clear the event */
   memset(event, 0, sizeof(sensors_event_t));
 
@@ -487,32 +520,39 @@ bool Adafruit_MLX90393::getEvent(sensors_event_t *event) {
  */
 uint8_t Adafruit_MLX90393::transceive(uint8_t *txbuf, uint8_t txlen,
                                       uint8_t *rxbuf, uint8_t rxlen,
-                                      uint8_t interdelay) {
+                                      uint8_t interdelay)
+{
   uint8_t status = 0;
   uint8_t i;
   uint8_t rxbuf2[rxlen + 2];
 
-  if (i2c_dev) {
+  if (i2c_dev)
+  {
     /* Write stage */
-    if (!i2c_dev->write(txbuf, txlen)) {
+    if (!i2c_dev->write(txbuf, txlen))
+    {
       return MLX90393_STATUS_ERROR;
     }
     delay(interdelay);
 
     /* Read status byte plus any others */
-    if (!i2c_dev->read(rxbuf2, rxlen + 1)) {
+    if (!i2c_dev->read(rxbuf2, rxlen + 1))
+    {
       return MLX90393_STATUS_ERROR;
     }
     status = rxbuf2[0];
-    for (i = 0; i < rxlen; i++) {
+    for (i = 0; i < rxlen; i++)
+    {
       rxbuf[i] = rxbuf2[i + 1];
     }
   }
 
-  if (spi_dev) {
+  if (spi_dev)
+  {
     spi_dev->write_then_read(txbuf, txlen, rxbuf2, rxlen + 1, 0x00);
     status = rxbuf2[0];
-    for (i = 0; i < rxlen; i++) {
+    for (i = 0; i < rxlen; i++)
+    {
       rxbuf[i] = rxbuf2[i + 1];
     }
     delay(interdelay);
@@ -529,7 +569,8 @@ uint8_t Adafruit_MLX90393::transceive(uint8_t *txbuf, uint8_t txlen,
    fill in
 */
 /**************************************************************************/
-void Adafruit_MLX90393::getSensor(sensor_t *sensor) {
+void Adafruit_MLX90393::getSensor(sensor_t *sensor)
+{
   /* Clear the sensor_t object */
   memset(sensor, 0, sizeof(sensor_t));
 
