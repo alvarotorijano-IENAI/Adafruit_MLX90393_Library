@@ -39,7 +39,20 @@
 #define MLX90393_STATUS_MASK (0xFC)   /**< Mask for status OK checks. */
 #define MLX90393_TEMP_COMPENSATION_BIT (0x400) /**< Temp compensation bit in CONF2. */
 
-/** Register map. */
+/** Customer are register map */
+#define MLX90393_CUSTOMER_REG_0 (0x00)  /**< Customer register 0, non-volatile. */
+#define MLX90393_CUSTOMER_REG_1 (0x01)  /**< Customer register 1, non-volatile. */
+#define MLX90393_CUSTOMER_REG_2 (0x02)  /**< Customer register 2, non-volatile. */
+
+#define MLX90393_SENS_TC_REG (0x03) /**< Temperature compensation low temp. */
+
+#define MLX90393_OFFSET_X_REG (0x04)    /**< Offset X register, non-volatile. */
+#define MLX90393_OFFSET_Y_REG (0x05)    /**< Offset Y register, non-volatile. */
+#define MLX90393_OFFSET_Z_REG (0x06)    /**< Offset Z register, non-volatile. */
+
+#define MLX90393_TREF_REG (0x24)   /**< Factory trimmed register. Temp sensor value at 35ºC */      
+
+/** Command maps. */
 enum {
   MLX90393_REG_SB = (0x10),  /**< Start burst mode. */
   MLX90393_REG_SW = (0x20),  /**< Start wakeup on change mode. */
@@ -101,6 +114,7 @@ typedef enum mlx90393_oversampling {
   MLX90393_OSR_2,
   MLX90393_OSR_3,
 } mlx90393_oversampling_t;
+
 
 /** Lookup table to convert raw values to uT based on [HALLCONF][GAIN_SEL][RES].
  */
@@ -208,14 +222,17 @@ public:
   bool readRegister(uint8_t reg, uint16_t *data);
   bool writeRegister(uint8_t reg, uint16_t data);
 
+  // Temperature reference register functions
+  bool readTREF(void);
+  uint16_t getTREF(void);
+
 private:
   Adafruit_I2CDevice *i2c_dev = NULL;
   Adafruit_SPIDevice *spi_dev = NULL;
 
   bool _isTemperatureCompensationEnabled = false;
+  uint16_t _tref_value = 0;  /**< Stored TREF register value (0x24) */
 
-
-  
   bool _init(void);
   uint8_t transceive(uint8_t *txbuf, uint8_t txlen, uint8_t *rxbuf = NULL,
                      uint8_t rxlen = 0, uint8_t interdelay = 10);

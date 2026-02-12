@@ -17,6 +17,8 @@
  *****************************************************************************/
 #include "Adafruit_MLX90393.h"
 
+
+
 /**
  * Instantiates a new Adafruit_MLX90393 class instance
  */
@@ -112,6 +114,8 @@ bool Adafruit_MLX90393::_init(void)
   {
     return false;
   }
+
+    readTREF(); 
 
   return true;
 }
@@ -421,11 +425,14 @@ bool Adafruit_MLX90393::readMeasurement(float *x, float *y, float *z, float *t)
     *x = (raw_xi - 32768.0f) * mlx90393_lsb_lookup[0][_gain][_res_x][0];
     *y = (raw_yi - 32768.0f) * mlx90393_lsb_lookup[0][_gain][_res_y][0];
     *z = (raw_zi - 32768.0f) * mlx90393_lsb_lookup[0][_gain][_res_z][1];
+
   }
 
   if (t != nullptr)
   {
-    *t = 25 + (raw_ti - 46244.f) / 45.2f;
+   // *t = 25 + (raw_ti - 46244.f) / 45.2f;
+    *t = 35 + (raw_ti - (float)_tref_value) / 45.2f; // TO BE TESTED. Formula from datasheet, may need adjustment based on actual readings.  
+
   }
 
   return true;
@@ -584,4 +591,27 @@ void Adafruit_MLX90393::getSensor(sensor_t *sensor)
   sensor->min_value = -50000; // -50 gauss in uTesla
   sensor->max_value = 50000;  // +50 gauss in uTesla
   sensor->resolution = 0.15;  // 100/16-bit uTesla per LSB
+}
+
+/**************************************************************************/
+/*!
+    @brief  Reads the TREF register (0x24) and stores it locally
+    @return True if read succeeded, false otherwise
+*/
+/**************************************************************************/
+bool Adafruit_MLX90393::readTREF(void)
+{
+  return readRegister(MLX90393_TREF_REG, &_tref_value);
+
+}
+
+/**************************************************************************/
+/*!
+    @brief  Gets the stored TREF register value
+    @return The TREF value (uint16_t) from register 0x24
+*/
+/**************************************************************************/
+uint16_t Adafruit_MLX90393::getTREF(void)
+{
+  return _tref_value;
 }
