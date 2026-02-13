@@ -62,7 +62,7 @@ enum {
   MLX90393_REG_WR = (0x60),  /**< Write register. */
   MLX90393_REG_EX = (0x80),  /**> Exit moode. */
   MLX90393_REG_HR = (0xD0),  /**< Memory recall. */
-  MLX90393_REG_HS = (0x70),  /**< Memory store. */
+  MLX90393_REG_HS = (0xE0),  /**< Memory store. */
   MLX90393_REG_RT = (0xF0),  /**< Reset. */
   MLX90393_REG_NOP = (0x00), /**< NOP. */
 };
@@ -221,6 +221,10 @@ public:
   // Extracted private functions made public for advanced usage
   bool readRegister(uint8_t reg, uint16_t *data);
   bool writeRegister(uint8_t reg, uint16_t data);
+
+  // NVRAM functions
+  bool Adafruit_MLX90393::storeNVRAM();
+  bool Adafruit_MLX90393::recallNVRAM();
 
   // Temperature reference register functions
   bool readTREF(void);

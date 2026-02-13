@@ -492,6 +492,48 @@ bool Adafruit_MLX90393::readRegister(uint8_t reg, uint16_t *data)
 }
 
 
+/**
+ * Store volatile memory to NVRAM (HS command).
+ * Copies the entire volatile memory (including Melexis area) to non-volatile memory.
+ * ⚠ Limited write endurance — use for one-time calibration only.
+ * @return True if the command was accepted.
+ */
+bool Adafruit_MLX90393::storeNVRAM()
+{
+  uint8_t tx[1] = {MLX90393_REG_HS};
+
+  if (transceive(tx, sizeof(tx), NULL, 0, 0) != MLX90393_STATUS_OK)
+  {
+    return false;
+  }
+
+  /* Datasheet: wait at least 15 ms after HS before sending next command. */
+  delay(20);
+
+  return true;
+}
+
+/**
+ * Recall NVRAM contents into volatile memory (HR command).
+ * This also happens automatically on power-on and after a reset (RT).
+ * @return True if the command was accepted.
+ */
+bool Adafruit_MLX90393::recallNVRAM()
+{
+  uint8_t tx[1] = {MLX90393_REG_HR};
+
+  if (transceive(tx, sizeof(tx), NULL, 0, 0) != MLX90393_STATUS_OK)
+  {
+    return false;
+  }
+
+  /* Small delay to let volatile memory settle. */
+  delay(2);
+
+  return true;
+}
+
+
 /**************************************************************************/
 /*!
     @brief  Gets the most recent sensor event, Adafruit Unified Sensor format
