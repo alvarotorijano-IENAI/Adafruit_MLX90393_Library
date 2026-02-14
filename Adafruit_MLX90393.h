@@ -238,6 +238,7 @@ private:
   uint16_t _tref_value = 0;  /**< Stored TREF register value (0x24) */
 
   bool _init(void);
+  bool _readBackConfig(void);
   uint8_t transceive(uint8_t *txbuf, uint8_t txlen, uint8_t *rxbuf = NULL,
                      uint8_t rxlen = 0, uint8_t interdelay = 10);
 

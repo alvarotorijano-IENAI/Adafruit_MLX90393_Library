@@ -87,35 +87,44 @@ bool Adafruit_MLX90393::_init(void)
   if (!reset())
     return false;
 
-  /* Set gain and sensor config. */
-  if (!setGain(MLX90393_GAIN_1X))
-  {
-    return false;
-  }
-
-  /* Set resolution. */
-  if (!setResolution(MLX90393_X, MLX90393_RES_16))
-    return false;
-  if (!setResolution(MLX90393_Y, MLX90393_RES_16))
-    return false;
-  if (!setResolution(MLX90393_Z, MLX90393_RES_16))
+  /* After reset the sensor auto-recalls NVRAM into volatile memory.
+     Read back the active configuration so our cached member variables
+     (gain, resolution, filter, osr, TC) match what NVRAM loaded. */
+  if (!_readBackConfig())
     return false;
 
-  /* Set oversampling. */
-  if (!setOversampling(MLX90393_OSR_3))
-    return false;
+  readTREF(); 
 
-  /* Set digital filtering. */
-  if (!setFilter(MLX90393_FILTER_7))
-    return false;
+  return true;
+}
 
-  /* set INT pin to output interrupt */
-  if (!setTrigInt(false))
-  {
-    return false;
-  }
+/**
+ * Read CONF1, CONF2, CONF3 registers and update cached member variables
+ * to reflect the actual sensor configuration (e.g. after reset / NVRAM recall).
+ * @return True if all register reads succeeded.
+ */
+bool Adafruit_MLX90393::_readBackConfig(void)
+{
+  uint16_t data;
 
-    readTREF(); 
+  /* CONF1 (0x00): GAIN_SEL is bits [6:4] */
+  if (!readRegister(MLX90393_CONF1, &data))
+    return false;
+  _gain = (mlx90393_gain_t)((data >> 4) & 0x07);
+
+  /* CONF2 (0x01): TCMP_EN is bit 10 */
+  if (!readRegister(MLX90393_CONF2, &data))
+    return false;
+  _isTemperatureCompensationEnabled = (data & MLX90393_TEMP_COMPENSATION_BIT) != 0;
+
+  /* CONF3 (0x02): OSR [1:0], DIG_FILT [4:2], RES_X [6:5], RES_Y [8:7], RES_Z [10:9] */
+  if (!readRegister(MLX90393_CONF3, &data))
+    return false;
+  _osr      = (mlx90393_oversampling_t)(data & 0x03);
+  _dig_filt = (mlx90393_filter_t)((data >> 2) & 0x07);
+  _res_x    = (mlx90393_resolution_t)((data >> 5) & 0x03);
+  _res_y    = (mlx90393_resolution_t)((data >> 7) & 0x03);
+  _res_z    = (mlx90393_resolution_t)((data >> 9) & 0x03);
 
   return true;
 }
@@ -530,7 +539,8 @@ bool Adafruit_MLX90393::recallNVRAM()
   /* Small delay to let volatile memory settle. */
   delay(2);
 
-  return true;
+  /* Update cached member variables to match what NVRAM loaded. */
+  return _readBackConfig();
 }
 
 
