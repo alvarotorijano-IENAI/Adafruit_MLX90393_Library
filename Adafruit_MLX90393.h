@@ -223,8 +223,8 @@ public:
   bool writeRegister(uint8_t reg, uint16_t data);
 
   // NVRAM functions
-  bool Adafruit_MLX90393::storeNVRAM();
-  bool Adafruit_MLX90393::recallNVRAM();
+  bool storeNVRAM();
+  bool recallNVRAM();
 
   // Temperature reference register functions
   bool readTREF(void);
