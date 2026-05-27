@@ -25,35 +25,36 @@
 
 #define MLX90393_DEFAULT_ADDR (0x0C) /* Can also be 0x18, depending on IC */
 
-#define MLX90393_AXIS_ALL (0x0F)      /**< X+Y+Z axis bits for commands. */
-#define MLX90393_CONF1 (0x00)         /**< Gain */
-#define MLX90393_CONF2 (0x01)         /**< Burst, comm mode */
-#define MLX90393_CONF3 (0x02)         /**< Oversampling, filter, res. */
-#define MLX90393_CONF4 (0x03)         /**< Sensitivty drift. */
-#define MLX90393_GAIN_SHIFT (4)       /**< Left-shift for gain bits. */
-#define MLX90393_HALL_CONF (0x0C)     /**< Hall plate spinning rate adj. */
-#define MLX90393_STATUS_OK (0x00)     /**< OK value for status response. */
-#define MLX90393_STATUS_SMMODE (0x08) /**< SM Mode status response. */
-#define MLX90393_STATUS_RESET (0x01)  /**< Reset value for status response. */
-#define MLX90393_STATUS_ERROR (0xFF)  /**< OK value for status response. */
-#define MLX90393_STATUS_MASK (0xFC)   /**< Mask for status OK checks. */
+#define MLX90393_AXIS_ALL (0x0F)               /**< X+Y+Z axis bits for commands. */
+#define MLX90393_CONF1 (0x00)                  /**< Gain */
+#define MLX90393_CONF2 (0x01)                  /**< Burst, comm mode */
+#define MLX90393_CONF3 (0x02)                  /**< Oversampling, filter, res. */
+#define MLX90393_CONF4 (0x03)                  /**< Sensitivty drift. */
+#define MLX90393_GAIN_SHIFT (4)                /**< Left-shift for gain bits. */
+#define MLX90393_HALL_CONF (0x0C)              /**< Hall plate spinning rate adj. */
+#define MLX90393_STATUS_OK (0x00)              /**< OK value for status response. */
+#define MLX90393_STATUS_SMMODE (0x08)          /**< SM Mode status response. */
+#define MLX90393_STATUS_RESET (0x01)           /**< Reset value for status response. */
+#define MLX90393_STATUS_ERROR (0xFF)           /**< OK value for status response. */
+#define MLX90393_STATUS_MASK (0xFC)            /**< Mask for status OK checks. */
 #define MLX90393_TEMP_COMPENSATION_BIT (0x400) /**< Temp compensation bit in CONF2. */
 
 /** Customer are register map */
-#define MLX90393_CUSTOMER_REG_0 (0x00)  /**< Customer register 0, non-volatile. */
-#define MLX90393_CUSTOMER_REG_1 (0x01)  /**< Customer register 1, non-volatile. */
-#define MLX90393_CUSTOMER_REG_2 (0x02)  /**< Customer register 2, non-volatile. */
+#define MLX90393_CUSTOMER_REG_0 (0x00) /**< Customer register 0, non-volatile. */
+#define MLX90393_CUSTOMER_REG_1 (0x01) /**< Customer register 1, non-volatile. */
+#define MLX90393_CUSTOMER_REG_2 (0x02) /**< Customer register 2, non-volatile. */
 
 #define MLX90393_SENS_TC_REG (0x03) /**< Temperature compensation low temp. */
 
-#define MLX90393_OFFSET_X_REG (0x04)    /**< Offset X register, non-volatile. */
-#define MLX90393_OFFSET_Y_REG (0x05)    /**< Offset Y register, non-volatile. */
-#define MLX90393_OFFSET_Z_REG (0x06)    /**< Offset Z register, non-volatile. */
+#define MLX90393_OFFSET_X_REG (0x04) /**< Offset X register, non-volatile. */
+#define MLX90393_OFFSET_Y_REG (0x05) /**< Offset Y register, non-volatile. */
+#define MLX90393_OFFSET_Z_REG (0x06) /**< Offset Z register, non-volatile. */
 
-#define MLX90393_TREF_REG (0x24)   /**< Factory trimmed register. Temp sensor value at 35ºC */      
+#define MLX90393_TREF_REG (0x24) /**< Factory trimmed register. Temp sensor value at 35ºC */
 
 /** Command maps. */
-enum {
+enum
+{
   MLX90393_REG_SB = (0x10),  /**< Start burst mode. */
   MLX90393_REG_SW = (0x20),  /**< Start wakeup on change mode. */
   MLX90393_REG_SM = (0x30),  /**> Start single-meas mode. */
@@ -68,7 +69,8 @@ enum {
 };
 
 /** Gain settings for CONF1 register. */
-typedef enum mlx90393_gain {
+typedef enum mlx90393_gain
+{
   MLX90393_GAIN_5X = (0x00),
   MLX90393_GAIN_4X,
   MLX90393_GAIN_3X,
@@ -80,7 +82,8 @@ typedef enum mlx90393_gain {
 } mlx90393_gain_t;
 
 /** Resolution settings for CONF3 register. */
-typedef enum mlx90393_resolution {
+typedef enum mlx90393_resolution
+{
   MLX90393_RES_16,
   MLX90393_RES_17,
   MLX90393_RES_18,
@@ -88,7 +91,8 @@ typedef enum mlx90393_resolution {
 } mlx90393_resolution_t;
 
 /** Axis designator. */
-typedef enum mlx90393_axis {
+typedef enum mlx90393_axis
+{
   MLX90393_X,
   MLX90393_Y,
   MLX90393_Z,
@@ -96,7 +100,8 @@ typedef enum mlx90393_axis {
 } mlx90393_axis_t;
 
 /** Digital filter settings for CONF3 register. */
-typedef enum mlx90393_filter {
+typedef enum mlx90393_filter
+{
   MLX90393_FILTER_0,
   MLX90393_FILTER_1,
   MLX90393_FILTER_2,
@@ -108,13 +113,13 @@ typedef enum mlx90393_filter {
 } mlx90393_filter_t;
 
 /** Oversampling settings for CONF3 register. */
-typedef enum mlx90393_oversampling {
+typedef enum mlx90393_oversampling
+{
   MLX90393_OSR_0,
   MLX90393_OSR_1,
   MLX90393_OSR_2,
   MLX90393_OSR_3,
 } mlx90393_oversampling_t;
-
 
 /** Lookup table to convert raw values to uT based on [HALLCONF][GAIN_SEL][RES].
  */
@@ -184,7 +189,8 @@ const float mlx90393_tconv[8][4] = {
 /**
  * Driver for the Adafruit MLX90393 magnetometer breakout board.
  */
-class Adafruit_MLX90393 : public Adafruit_Sensor {
+class Adafruit_MLX90393 : public Adafruit_Sensor
+{
 public:
   Adafruit_MLX90393();
   bool begin_I2C(uint8_t i2c_addr = MLX90393_DEFAULT_ADDR,
@@ -212,6 +218,9 @@ public:
   bool setOversampling(enum mlx90393_oversampling oversampling);
   enum mlx90393_oversampling getOversampling(void);
 
+  bool setOSR2(enum mlx90393_oversampling oversampling);
+  enum mlx90393_oversampling getOSR2(void);
+
   bool setTrigInt(bool state);
   bool readData(float *x, float *y, float *z, float *t = nullptr);
 
@@ -235,7 +244,7 @@ private:
   Adafruit_SPIDevice *spi_dev = NULL;
 
   bool _isTemperatureCompensationEnabled = false;
-  uint16_t _tref_value = 0;  /**< Stored TREF register value (0x24) */
+  uint16_t _tref_value = 0; /**< Stored TREF register value (0x24) */
 
   bool _init(void);
   bool _readBackConfig(void);
@@ -246,6 +255,7 @@ private:
   enum mlx90393_resolution _res_x, _res_y, _res_z;
   enum mlx90393_filter _dig_filt;
   enum mlx90393_oversampling _osr;
+  enum mlx90393_oversampling _osr2;
 
   int32_t _sensorID = 90393;
   int _cspin;
