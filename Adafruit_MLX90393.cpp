@@ -310,8 +310,8 @@ bool Adafruit_MLX90393::setOSR2(enum mlx90393_oversampling oversampling)
   uint16_t data;
   readRegister(MLX90393_CONF3, &data);
 
-  data &= ~((uint16_t)0x03 << 11);          // clear bits [15:14]
-  data |=  ((uint16_t)oversampling << 11);   // insert new value
+  data &= ~((uint16_t)0x03 << 11);          // clear OSR2 bits [12:11]
+  data |=  ((uint16_t)oversampling << 11);  // insert new value
 
   return writeRegister(MLX90393_CONF3, data);
 }
